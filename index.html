@@ -20,6 +20,7 @@
         - Optimization Algorithms: An interactive chart visualizing the paths of different optimizers (SGD, Momentum, ADAM) on a loss surface. Goal: Compare & Explain Behavior.
         - Regularization: Interactive charts for Overfitting and Vanishing/Exploding Gradients. An interactive diagram for Dropout. Goal: Explain & Compare.
         - CNNs: Interactive visualization for the convolution operation.
+        - RNNs: Step-by-step animation of an RNN unrolling through time to process a sequence. Goal: Explain Process.
         - Autoencoders: Presented as informational cards for easy scanning. Core concept visualized with a CSS diagram. Goal: Organize & Inform.
         - Federated Learning: An interactive, step-by-step CSS diagram. Goal: Explain Process. Interaction: User clicks to advance through the cycle, reinforcing the sequence.
         - Continual Learning: An interactive bar chart. Goal: Compare & Demonstrate Change. Interaction: Buttons dynamically alter chart data to visualize catastrophic forgetting and mitigation strategies. Justification: A dynamic chart is far more impactful for showing this concept than text alone. Library: Chart.js.
@@ -69,6 +70,7 @@
         .kernel-grid { display: grid; grid-template-columns: repeat(3, 2rem); gap: 2px; }
         .kernel-cell { width: 2rem; height: 2rem; display:flex; align-items:center; justify-content:center; border: 1px solid #999; font-size: 0.8em;}
         .highlight-kernel { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.7); transition: all 0.2s linear; }
+        .rnn-anim-el { transition: all 0.4s ease-in-out; }
     </style>
 </head>
 <body class="flex min-h-screen">
@@ -438,25 +440,25 @@ document.addEventListener('DOMContentLoaded', () => {
             html: `
             <div class="space-y-8">
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">The Recurrent Neuron</h3>
-                    <p>The core idea of an RNN is a cell that takes an input \`x_t\` and a hidden state from the previous timestep \`h_{t-1}\` to produce an output and a new hidden state \`h_t\`. This "memory" allows it to process sequences.</p>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Animating the RNN Cell</h3>
+                    <p>The core idea of an RNN is a cell that takes an input \`x_t\` and a hidden state from the previous timestep \`h_{t-1}\` to produce an output and a new hidden state \`h_t\`. This "memory" allows it to process sequences. Click the 'Next Step' button to see how the RNN unrolls and processes a sequence over time.</p>
                     <div class="text-center my-4">\`h_t = f(W_{hh} h_{t-1} + W_{xh} x_t + b_h)\` <br> \`y_t = W_{hy} h_t + b_y\`</div>
-                    <p class="mb-4">The same weights (W, b) are used for every step, allowing the model to generalize across the sequence.</p>
-                    <div class="flex items-center justify-center p-4 bg-gray-50 rounded-lg">
-                         <div class="text-center">
-                            <p class="font-bold">\`x_t\`</p>
-                            <div class="text-3xl">→</div>
-                         </div>
-                         <div class="p-6 border-2 border-blue-400 rounded-lg text-center mx-4">
-                            <p class="font-bold text-lg">RNN Cell</p>
-                            <p>\`h_t\`</p>
-                            <div class="text-2xl">↑</div>
-                            <p class="text-sm">\`h_{t-1}\`</p>
-                         </div>
-                         <div class="text-center">
-                            <p class="font-bold">\`y_t\`</p>
-                            <div class="text-3xl">→</div>
-                         </div>
+
+                    <div id="rnn-animation-container" class="relative p-4 bg-gray-50 rounded-lg overflow-x-auto min-h-[300px]">
+                        <div class="flex items-center justify-around space-x-4">
+                           <div id="rnn-step-0" class="rnn-anim-el text-center opacity-0">
+                               <div class="p-3 bg-gray-200 rounded-lg font-bold">h_0</div>
+                               <div class="text-xs mt-1">Initial State</div>
+                           </div>
+                           <!-- Timesteps will be injected here by JS -->
+                        </div>
+                    </div>
+                    <div id="rnn-description" class="mt-6 p-4 bg-gray-100 rounded-lg text-center h-16 flex items-center justify-center">
+                        <p>Click 'Next Step' to begin the animation.</p>
+                    </div>
+                     <div class="mt-6 text-center">
+                        <button id="rnn-step-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors">Next Step</button>
+                        <button id="rnn-reset-btn" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 transition-colors">Reset</button>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md">
@@ -1461,6 +1463,114 @@ document.addEventListener('DOMContentLoaded', () => {
 
         init();
     }
+    
+    function setupRnnAnimation() {
+        const container = document.getElementById('rnn-animation-container');
+        if (!container) return;
+        const descEl = document.getElementById('rnn-description');
+        const stepBtn = document.getElementById('rnn-step-btn');
+        const resetBtn = document.getElementById('rnn-reset-btn');
+
+        const numSteps = 4;
+        let currentStep = -1;
+
+        function init() {
+            currentStep = -1;
+            const holder = container.querySelector('.flex');
+            holder.innerHTML = `<div id="rnn-step-0" class="rnn-anim-el text-center opacity-0">
+                               <div class="p-3 bg-gray-200 rounded-lg font-bold">h_0</div>
+                               <div class="text-xs mt-1">Initial State</div>
+                           </div>`;
+            for (let i=1; i<=numSteps; i++) {
+                holder.innerHTML += `
+                <div class="rnn-anim-el text-4xl text-gray-300 opacity-0" id="arrow-h-${i-1}">→</div>
+                <div class="text-center">
+                    <div class="rnn-anim-el p-3 bg-yellow-100 rounded-lg font-bold opacity-0" id="rnn-output-${i}">y_${i}</div>
+                    <div class="rnn-anim-el text-3xl text-gray-300 opacity-0 my-2" id="arrow-y-${i}">↑</div>
+                    <div id="rnn-cell-${i}" class="rnn-anim-el p-4 border-2 border-gray-300 rounded-lg text-center">
+                        <p class="font-bold">RNN Cell</p>
+                        <p class="text-sm">t=${i}</p>
+                    </div>
+                    <div class="rnn-anim-el text-3xl text-gray-300 opacity-0 my-2" id="arrow-x-${i}">↑</div>
+                    <div class="rnn-anim-el p-3 bg-green-100 rounded-lg font-bold opacity-0" id="rnn-input-${i}">x_${i}</div>
+                </div>
+                `;
+            }
+            updateState();
+        }
+        
+        function updateState() {
+            const totalPhases = numSteps * 3;
+            if (currentStep > totalPhases) currentStep = totalPhases;
+             
+            // Reset all styles
+            for (let i=0; i<=numSteps; i++) {
+                 const h = document.getElementById(`rnn-step-${i}`);
+                 if(h) h.classList.add('opacity-0');
+                 if(i > 0) {
+                    document.getElementById(`arrow-h-${i-1}`).classList.add('opacity-0');
+                    document.getElementById(`rnn-output-${i}`).classList.add('opacity-0');
+                    document.getElementById(`arrow-y-${i}`).classList.add('opacity-0');
+                    document.getElementById(`rnn-cell-${i}`).classList.remove('bg-blue-200', 'border-blue-400', 'scale-110');
+                    document.getElementById(`arrow-x-${i}`).classList.add('opacity-0');
+                    document.getElementById(`rnn-input-${i}`).classList.add('opacity-0');
+                 }
+            }
+
+            if (currentStep === -1) {
+                descEl.innerHTML = `<p>Click 'Next Step' to begin the animation.</p>`;
+                return;
+            }
+
+            // Show processed elements
+            for (let i=0; i < Math.ceil(currentStep / 3); i++) {
+                document.getElementById(`rnn-step-${i}`).classList.remove('opacity-0');
+                if (i > 0) {
+                    document.getElementById(`rnn-input-${i}`).classList.remove('opacity-0');
+                    document.getElementById(`rnn-output-${i}`).classList.remove('opacity-0');
+                }
+            }
+
+            const stepInCycle = currentStep % 3;
+            const timeStep = Math.floor(currentStep / 3) + 1;
+            
+            if (timeStep > numSteps) {
+                 descEl.innerHTML = `<p>Sequence processing complete.</p>`;
+                 return;
+            }
+
+            if (stepInCycle === 0) { // Phase 1: Input
+                document.getElementById(`rnn-input-${timeStep}`).classList.remove('opacity-0');
+                document.getElementById(`arrow-x-${timeStep}`).classList.remove('opacity-0');
+                document.getElementById(`arrow-h-${timeStep-1}`).classList.remove('opacity-0');
+                document.getElementById(`rnn-step-${timeStep-1}`).classList.remove('opacity-0');
+                descEl.innerHTML = `<p><strong>Timestep t=${timeStep}:</strong> Input \`x_${timeStep}\` and previous state \`h_${timeStep-1}\` are fed into the cell.</p>`;
+            } else if (stepInCycle === 1) { // Phase 2: Process
+                document.getElementById(`rnn-cell-${timeStep}`).classList.add('bg-blue-200', 'border-blue-400', 'scale-110');
+                descEl.innerHTML = `<p><strong>Timestep t=${timeStep}:</strong> The cell processes the inputs to compute the new state.</p>`;
+            } else if (stepInCycle === 2) { // Phase 3: Output
+                document.getElementById(`arrow-y-${timeStep}`).classList.remove('opacity-0');
+                document.getElementById(`rnn-output-${timeStep}`).classList.remove('opacity-0');
+                const next_h = document.createElement('div');
+                next_h.id = `rnn-step-${timeStep}`;
+                next_h.className = `rnn-anim-el text-center`;
+                next_h.innerHTML = `<div class="p-3 bg-gray-200 rounded-lg font-bold">h_${timeStep}</div>
+                               <div class="text-xs mt-1">New State</div>`;
+                document.getElementById(`rnn-cell-${timeStep}`).parentElement.appendChild(next_h);
+
+                descEl.innerHTML = `<p><strong>Timestep t=${timeStep}:</strong> The cell produces output \`y_${timeStep}\` and the new hidden state \`h_${timeStep}\`.</p>`;
+            }
+        }
+
+        stepBtn.addEventListener('click', () => {
+             currentStep++;
+             updateState();
+        });
+        resetBtn.addEventListener('click', init);
+        
+        init();
+    }
+
 
     function setupApproximationChart() {
         const uaCtx = document.getElementById('universalApproximationChart');
@@ -1735,7 +1845,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setupApproximationChart,
         createOrUpdateClChart.bind(null, initialData),
         setupTimeSeriesChart,
-        setupConvolutionVisualization
+        setupConvolutionVisualization,
+        setupRnnAnimation
     ];
 
     allSetupFunctions.forEach(fn => {
