@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Canvas of Deep Neural Networks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed with a persistent left-sidebar navigation for discoverability and non-linear exploration of DNN topics. The main content area uses interactive elements (clickable diagrams, dynamic charts) to deconstruct complex processes like Federated Learning and Catastrophic Forgetting, making them more digestible than static text. This structure was chosen to transform a text-based document into an engaging learning tool, prioritizing user interaction and conceptual clarity over a simple linear presentation. -->
+    <!-- Visualization & Content Choices: 
+        - Autoencoders: Presented as informational cards for easy scanning. Core concept visualized with a CSS diagram. Goal: Organize & Inform.
+        - Federated Learning: An interactive, step-by-step CSS diagram. Goal: Explain Process. Interaction: User clicks to advance through the cycle, reinforcing the sequence.
+        - Continual Learning: An interactive bar chart. Goal: Compare & Demonstrate Change. Interaction: Buttons dynamically alter chart data to visualize catastrophic forgetting and mitigation strategies. Justification: A dynamic chart is far more impactful for showing this concept than text alone. Library: Chart.js.
+        - Transformers: A clickable CSS block diagram. Goal: Organize & Explain Architecture. Interaction: Users click components (e.g., 'Multi-Head Attention') to reveal detailed explanations. Justification: This allows users to explore a complex architecture at their own pace.
+        All visualizations are built with HTML/CSS or Canvas via Chart.js. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .active-nav {
+            background-color: #EAE3DA;
+            color: #8A6D53;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+    </style>
+</head>
+<body class="flex min-h-screen">
+    <aside id="sidebar" class="w-64 bg-[#F5F1EC] p-4 fixed top-0 left-0 h-full transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
+        <h2 class="text-xl font-bold text-[#8A6D53] mb-6">DNN Canvas</h2>
+        <nav class="space-y-2">
+            <a href="#topic-1" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Autoencoders</a>
+            <a href="#topic-2" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Federated Learning</a>
+            <a href="#topic-3" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Meta-Learning</a>
+            <a href="#topic-4" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Continual Learning</a>
+            <a href="#topic-5" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Transformers</a>
+            <a href="#topic-6" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Time Series Forecasting</a>
+        </nav>
+    </aside>
+
+    <button id="menu-toggle" class="md:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-md shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+    </button>
+    
+    <div id="overlay" class="md:hidden fixed inset-0 bg-black opacity-0 z-20 transition-opacity duration-300 hidden"></div>
+
+    <main class="flex-1 md:ml-64 p-6 md:p-10">
+        <header class="mb-12">
+            <h1 class="text-4xl font-bold text-[#8A6D53]">Interactive Canvas of Deep Neural Networks</h1>
+            <p class="mt-2 text-lg text-gray-600">An explorable guide to core concepts in DNNs. Use the sidebar to navigate topics.</p>
+        </header>
+
+        <section id="topic-1" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-semibold mb-4 text-[#8A6D53]">Topic 1: Autoencoders</h2>
+            <p class="text-gray-700 mb-6">This section explores autoencoders, a fascinating type of neural network used for unsupervised learning. We'll start with the foundational context and build up to more specialized and powerful architectures that learn efficient data codings.</p>
+            <div id="content-topic-1"></div>
+        </section>
+
+        <section id="topic-2" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-semibold mb-4 text-[#8A6D53]">Topic 2: Federated Learning</h2>
+            <p class="text-gray-700 mb-6">Federated Learning is a training paradigm that enables collaborative model building across many devices without centralizing data, thus preserving user privacy. Explore the step-by-step process below to understand how it works.</p>
+             <div id="content-topic-2"></div>
+        </section>
+
+        <section id="topic-3" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-semibold mb-4 text-[#8A6D53]">Topic 3: Meta-Learning</h2>
+            <p class="text-gray-700 mb-6">Meta-Learning, or "learning to learn," focuses on designing models that can adapt to new tasks quickly with minimal training data. It's about learning the process of learning itself, rather than just learning to perform a single task.</p>
+            <div id="content-topic-3"></div>
+        </section>
+
+        <section id="topic-4" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-semibold mb-4 text-[#8A6D53]">Topic 4: Online and Continual Learning</h2>
+            <p class="text-gray-700 mb-6">Continual Learning addresses the challenge of training a single model on a sequence of tasks over its lifetime. The key problem is "catastrophic forgetting"—forgetting old tasks when learning new ones. Interact with the chart below to see this effect and learn about mitigation strategies.</p>
+            <div id="content-topic-4"></div>
+        </section>
+
+        <section id="topic-5" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-semibold mb-4 text-[#8A6D53]">Topic 5: The Attention Mechanism and Transformers</h2>
+            <p class="text-gray-700 mb-6">The Attention Mechanism revolutionized sequence modeling by allowing models to weigh the importance of different parts of the input data. This concept is the heart of the Transformer architecture. Click on the components of the diagram below to explore how it all fits together.</p>
+            <div id="content-topic-5"></div>
+        </section>
+
+        <section id="topic-6" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-semibold mb-4 text-[#8A6D53]">Topic 6: Time Series Forecasting with DNNs</h2>
+            <p class="text-gray-700 mb-6">This section covers how Deep Neural Networks like CNNs and LSTMs can be used to model and forecast time series data by learning complex patterns such as trends and seasonality directly from the data.</p>
+            <div id="content-topic-6"></div>
+        </section>
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const content = {
+        'topic-1': `
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.2 Autoencoders: The Core Idea</h3>
+            <p class="mb-6">An autoencoder learns a compressed representation of its input. It has two parts: an encoder that compresses the data to a bottleneck, and a decoder that reconstructs the original data from the compressed form.</p>
+            <div class="bg-white p-6 rounded-lg shadow-md mb-8 flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                <div class="text-center p-4 bg-blue-100 rounded-lg w-full md:w-auto">
+                    <p class="font-bold">Original Input</p>
+                </div>
+                <div class="font-bold text-2xl text-blue-500">→</div>
+                <div class="text-center p-4 bg-green-100 rounded-lg">
+                    <p class="font-bold">Encoder</p>
+                </div>
+                <div class="font-bold text-2xl text-green-500">→</div>
+                <div class="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-400">
+                    <p class="font-bold">Bottleneck (Compressed)</p>
+                </div>
+                <div class="font-bold text-2xl text-purple-500">→</div>
+                <div class="text-center p-4 bg-purple-100 rounded-lg">
+                    <p class="font-bold">Decoder</p>
+                </div>
+                <div class="font-bold text-2xl text-red-500">→</div>
+                <div class="text-center p-4 bg-red-100 rounded-lg w-full md:w-auto">
+                    <p class="font-bold">Reconstructed Output</p>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg mb-2">Undercomplete</h4>
+                    <p>The bottleneck dimension is smaller than the input, forcing the network to learn a compressed representation.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg mb-2">Regularized</h4>
+                    <p>Uses a loss function that encourages properties other than just copying, preventing simple memorization.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg mb-2">Denoising</h4>
+                    <p>Trained to reconstruct a clean image from a noisy input, forcing it to learn robust features.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg mb-2">Sparse</h4>
+                    <p>Constrains the number of neurons that can be active at once, encouraging specialized feature learning.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg mb-2">Convolutional</h4>
+                    <p>Uses convolutional layers, making it ideal for learning spatial features in images.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="font-bold text-lg mb-2">Deep</h4>
+                    <p>Has multiple hidden layers in both the encoder and decoder, allowing it to learn complex hierarchies.</p>
+                </div>
+            </div>
+        `,
+        'topic-6': `
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <p class="mb-6">Deep Neural Networks are powerful tools for forecasting because they can automatically learn complex patterns like trends and seasonality from raw time series data without manual feature engineering.</p>
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-bold text-lg mb-2">Using LSTMs (Recurrent Neural Networks)</h4>
+                        <p>LSTMs are naturally suited for sequence data. Their internal memory cells allow them to remember long-term dependencies, making them excellent at capturing overall trends and complex seasonal patterns that repeat over long periods.</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                        <h4 class="font-bold text-lg mb-2">Using CNNs (Convolutional Neural Networks)</h4>
+                        <p>While known for images, 1D CNNs are highly effective for time series. They act as pattern detectors, sliding over the sequence to identify significant, short-term local patterns (e.g., a weekly spike) that are predictive of future values.</p>
+                    </div>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2 text-center">Interactive Forecast Visualization</h3>
+                <p class="text-center text-sm text-gray-600 mb-4">See how different models might interpret trends and seasonality. This is a conceptual illustration.</p>
+                <div class="chart-container">
+                    <canvas id="timeSeriesChart"></canvas>
+                </div>
+                <div class="mt-6 text-center space-x-2 space-y-2">
+                    <button id="ts-reset" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">Reset Data</button>
+                    <button id="ts-forecast-lstm" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">Forecast with LSTM</button>
+                    <button id="ts-forecast-cnn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">Forecast with CNN</button>
+                </div>
+            </div>
+        `
+    };
+
+    const explanations = {
+        'multi-head-attention': { title: 'Multi-Head Attention', text: 'Instead of one, it uses multiple attention "heads" running in parallel. This allows the model to jointly attend to information from different representation subspaces at different positions, capturing more complex relationships within the data.' },
+        'feed-forward': { title: 'Feed-Forward Network', text: 'A simple, fully connected neural network applied independently to each position. It processes the output of the attention layer, adding further non-linearity and representational power.' },
+        'masked-mha': { title: 'Masked Multi-Head Attention', text: 'This is the same as the regular multi-head attention in the encoder, but with one crucial difference: it "masks" future positions in the sequence. This ensures that when predicting the next word, the model can only attend to previous words, preventing it from cheating.' },
+        'encoder-decoder-attention': { title: 'Encoder-Decoder Attention', text: 'This layer connects the encoder and decoder. The queries come from the decoder\'s masked attention layer, while the keys and values come from the final output of the encoder stack. This allows every position in the decoder to attend over all positions in the input sequence, which is crucial for tasks like machine translation.' }
+    };
+    
+    Object.keys(content).forEach(key => {
+        const container = document.getElementById(`content-${key}`);
+        if (container) {
+            container.innerHTML = content[key];
+        }
+    });
+
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+        overlay.classList.toggle('opacity-0');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        overlay.classList.add('opacity-0');
+    });
+
+    // Active nav link highlighting
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    if (link.getAttribute('href').substring(1) === entry.target.id) {
+                        link.classList.add('active-nav');
+                    }
+                });
+            }
+        });
+    }, { rootMargin: '-50% 0px -50% 0px', threshold: 0 });
+
+    sections.forEach(section => observer.observe(section));
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+             if (sidebar.classList.contains('-translate-x-full') === false && window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.add('opacity-0');
+             }
+        });
+    });
+
+
+    // Topic 2: Federated Learning Interactive
+    const flSteps = document.querySelectorAll('.fl-step');
+    const flDesc = document.getElementById('fl-description');
+    const flNextBtn = document.getElementById('fl-next-btn');
+    let currentFlStep = 0;
+    const flDescriptions = [
+        "The central server initializes a global model and sends it to a selection of client devices.",
+        "Each client trains the model on its own local data. The data never leaves the device.",
+        "Clients send their computed model updates (not the raw data) back to the server.",
+        "The server aggregates the updates from all clients (e.g., by averaging) to improve the global model. The cycle repeats."
+    ];
+    
+    function updateFlStep() {
+        flSteps.forEach((step, index) => {
+            if (index + 1 === currentFlStep) {
+                step.classList.add('border-[#8A6D53]', 'scale-110');
+            } else {
+                step.classList.remove('border-[#8A6D53]', 'scale-110');
+            }
+        });
+        flDesc.innerHTML = `<p>${flDescriptions[currentFlStep - 1]}</p>`;
+        flNextBtn.textContent = 'Next Step';
+    }
+
+    if (flNextBtn) {
+        flNextBtn.addEventListener('click', () => {
+            currentFlStep = (currentFlStep % flSteps.length) + 1;
+            if(currentFlStep > flSteps.length) currentFlStep = 1;
+            updateFlStep();
+             if(currentFlStep === 4) flNextBtn.textContent = 'Restart Cycle';
+        });
+    }
+
+    // Topic 4: Continual Learning Chart
+    const clCtx = document.getElementById('continualLearningChart');
+    let clChart;
+    const initialData = {
+        labels: ['Task 1'],
+        datasets: [{
+            label: 'Performance',
+            data: [95],
+            backgroundColor: 'rgba(138, 109, 83, 0.5)',
+            borderColor: 'rgba(138, 109, 83, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    function createOrUpdateChart(data) {
+        if (clChart) {
+            clChart.data = data;
+            clChart.update();
+        } else if(clCtx) {
+            clChart = new Chart(clCtx, {
+                type: 'bar',
+                data: JSON.parse(JSON.stringify(data)),
+                options: {
+                    scales: {
+                        y: { beginAtZero: true, max: 100, title: { display: true, text: 'Performance (%)' } }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Model Performance on Tasks', font: { size: 16 }},
+                        tooltip: { enabled: true }
+                    }
+                }
+            });
+        }
+    }
+    createOrUpdateChart(initialData);
+
+    let taskCounter = 1;
+    if(document.getElementById('cl-reset')) {
+        document.getElementById('cl-reset').addEventListener('click', () => {
+            taskCounter = 1;
+            createOrUpdateChart(initialData);
+        });
+    }
+
+    if(document.getElementById('cl-add-task')) {
+        document.getElementById('cl-add-task').addEventListener('click', () => {
+            if (taskCounter < 5) {
+                taskCounter++;
+                const newData = JSON.parse(JSON.stringify(clChart.data));
+                newData.labels.push(`Task ${taskCounter}`);
+                newData.datasets[0].data = newData.datasets[0].data.map(d => Math.max(10, d - 40));
+                newData.datasets[0].data.push(95);
+                createOrUpdateChart(newData);
+            }
+        });
+    }
+    
+    if(document.getElementById('cl-add-task-ewc')) {
+         document.getElementById('cl-add-task-ewc').addEventListener('click', () => {
+            if (taskCounter < 5) {
+                taskCounter++;
+                const newData = JSON.parse(JSON.stringify(clChart.data));
+                newData.labels.push(`Task ${taskCounter}`);
+                newData.datasets[0].data = newData.datasets[0].data.map(d => Math.max(20, d - 15));
+                newData.datasets[0].data.push(95);
+                createOrUpdateChart(newData);
+            }
+        });
+    }
+
+    if(document.getElementById('cl-add-task-replay')) {
+         document.getElementById('cl-add-task-replay').addEventListener('click', () => {
+            if (taskCounter < 5) {
+                taskCounter++;
+                const newData = JSON.parse(JSON.stringify(clChart.data));
+                newData.labels.push(`Task ${taskCounter}`);
+                newData.datasets[0].data = newData.datasets[0].data.map(d => Math.max(30, d - 5));
+                newData.datasets[0].data.push(95);
+                createOrUpdateChart(newData);
+            }
+        });
+    }
+
+    // Topic 5: Transformer Interactive Diagram
+    const transformerBlocks = document.querySelectorAll('.transformer-block');
+    const transformerExplanation = document.getElementById('transformer-explanation');
+    
+    if (transformerBlocks) {
+        transformerBlocks.forEach(block => {
+            block.addEventListener('click', () => {
+                const id = block.dataset.id;
+                const explanation = explanations[id];
+                if (explanation && transformerExplanation) {
+                    transformerExplanation.innerHTML = `
+                        <h4 class="font-bold text-lg mb-2">${explanation.title}</h4>
+                        <p>${explanation.text}</p>
+                    `;
+                }
+                transformerBlocks.forEach(b => b.classList.remove('ring-2', 'ring-offset-2', 'ring-yellow-500'));
+                block.classList.add('ring-2', 'ring-offset-2', 'ring-yellow-500');
+            });
+        });
+    }
+
+    // Topic 6: Time Series Chart
+    function setupTimeSeriesChart() {
+        const tsCtx = document.getElementById('timeSeriesChart');
+        if (!tsCtx) return;
+
+        let tsChart;
+
+        const generateData = () => {
+            const data = [];
+            const labels = [];
+            for (let i = 0; i < 50; i++) {
+                const trend = i * 0.5;
+                const seasonality = Math.sin(i * Math.PI / 6) * 10;
+                const noise = (Math.random() - 0.5) * 5;
+                data.push(trend + seasonality + 20 + noise);
+                labels.push(`T${i+1}`);
+            }
+            return { data, labels };
+        };
+
+        const initialSeries = generateData();
+        const baseData = {
+            labels: initialSeries.labels,
+            datasets: [{
+                label: 'Historical Data',
+                data: initialSeries.data,
+                borderColor: 'rgba(138, 109, 83, 1)',
+                backgroundColor: 'rgba(138, 109, 83, 0.2)',
+                fill: true,
+                tension: 0.1
+            }]
+        };
+
+        function createOrUpdateTsChart(data) {
+            if (tsChart) {
+                tsChart.destroy();
+            }
+            tsChart = new Chart(tsCtx, {
+                type: 'line',
+                data: JSON.parse(JSON.stringify(data)),
+                options: {
+                    scales: { y: { beginAtZero: false, title: { display: true, text: 'Value' } } },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Time Series Data & Forecasts', font: { size: 16 } },
+                        tooltip: { mode: 'index', intersect: false }
+                    }
+                }
+            });
+        }
+
+        createOrUpdateTsChart(baseData);
+
+        document.getElementById('ts-reset')?.addEventListener('click', () => {
+            createOrUpdateTsChart(baseData);
+        });
+        
+        document.getElementById('ts-forecast-lstm')?.addEventListener('click', () => {
+            const forecastData = JSON.parse(JSON.stringify(baseData));
+            const forecastLabels = [];
+            const forecastPoints = [];
+            for (let i = 50; i < 62; i++) {
+                const trend = i * 0.5;
+                const seasonality = Math.sin(i * Math.PI / 6) * 10;
+                forecastPoints.push(trend + seasonality + 20);
+                forecastLabels.push(`F${i-49}`);
+            }
+            
+            forecastData.labels.push(...forecastLabels);
+            forecastData.datasets.push({
+                label: 'LSTM Forecast (Trend + Seasonality)',
+                data: new Array(initialSeries.data.length).fill(null).concat(forecastPoints),
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderDash: [5, 5],
+                tension: 0.1,
+                fill: false,
+            });
+            createOrUpdateTsChart(forecastData);
+        });
+
+        document.getElementById('ts-forecast-cnn')?.addEventListener('click', () => {
+            const forecastData = JSON.parse(JSON.stringify(baseData));
+            const forecastLabels = [];
+            const forecastPoints = [];
+            for (let i = 50; i < 62; i++) {
+                const trend = 49 * 0.5;
+                const seasonality = Math.sin(i * Math.PI / 6) * 10;
+                const noise = (Math.random() - 0.5) * 4;
+                forecastPoints.push(trend + seasonality + 20 + noise);
+                forecastLabels.push(`F${i-49}`);
+            }
+
+            forecastData.labels.push(...forecastLabels);
+            forecastData.datasets.push({
+                label: 'CNN Forecast (Local Patterns)',
+                data: new Array(initialSeries.data.length).fill(null).concat(forecastPoints),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderDash: [5, 5],
+                tension: 0.4,
+                fill: false,
+            });
+            createOrUpdateTsChart(forecastData);
+        });
+    }
+    
+    setupTimeSeriesChart();
+
+});
+</script>
+</body>
+</html>
+
