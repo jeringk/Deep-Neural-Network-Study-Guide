@@ -12,6 +12,7 @@
     <!-- Chosen Palette: Warm Neutrals -->
     <!-- Application Structure Plan: The SPA is designed with a persistent left-sidebar navigation for discoverability and non-linear exploration of DNN topics. The main content area uses interactive elements (clickable diagrams, dynamic charts) to deconstruct complex processes like Federated Learning and Catastrophic Forgetting, making them more digestible than static text. This structure was chosen to transform a text-based document into an engaging learning tool, prioritizing user interaction and conceptual clarity over a simple linear presentation. -->
     <!-- Visualization & Content Choices: 
+        - Fundamentals: Side-by-side comparison for neurons, a visual plot for the XOR problem, and a dynamic chart demonstrating the Universal Approximation Theorem. Goal: Inform & Explain.
         - Autoencoders: Presented as informational cards for easy scanning. Core concept visualized with a CSS diagram. Goal: Organize & Inform.
         - Federated Learning: An interactive, step-by-step CSS diagram. Goal: Explain Process. Interaction: User clicks to advance through the cycle, reinforcing the sequence.
         - Continual Learning: An interactive bar chart. Goal: Compare & Demonstrate Change. Interaction: Buttons dynamically alter chart data to visualize catastrophic forgetting and mitigation strategies. Justification: A dynamic chart is far more impactful for showing this concept than text alone. Library: Chart.js.
@@ -44,6 +45,7 @@
     <aside id="sidebar" class="w-64 bg-[#F5F1EC] p-4 fixed top-0 left-0 h-full transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
         <h2 class="text-xl font-bold text-[#8A6D53] mb-6">DNN Canvas</h2>
         <nav class="space-y-2">
+            <a href="#topic-0" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Fundamentals</a>
             <a href="#topic-1" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Autoencoders</a>
             <a href="#topic-2" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Federated Learning</a>
             <a href="#topic-3" class="block py-2 px-3 rounded-md hover:bg-[#EAE3DA] transition-colors nav-link">Meta-Learning</a>
@@ -66,6 +68,12 @@
             <h1 class="text-4xl font-bold text-[#8A6D53]">Interactive Canvas of Deep Neural Networks</h1>
             <p class="mt-2 text-lg text-gray-600">An explorable guide to core concepts in DNNs. Use the sidebar to navigate topics.</p>
         </header>
+
+        <section id="topic-0" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-semibold mb-4 text-[#8A6D53]">Topic 0: Fundamentals of Neural Networks</h2>
+            <p class="text-gray-700 mb-6">This section lays the groundwork, covering the core motivations, biological inspirations, and foundational models that underpin the entire field of deep learning.</p>
+            <div id="content-topic-0"></div>
+        </section>
 
         <section id="topic-1" class="mb-16 scroll-mt-20">
             <h2 class="text-3xl font-semibold mb-4 text-[#8A6D53]">Topic 1: Autoencoders</h2>
@@ -108,27 +116,100 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     const content = {
+        'topic-0': `
+            <div class="space-y-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Why Deep Learning?</h3>
+                    <p class="mb-4">Deep learning excels at finding intricate patterns in large datasets (e.g., images, text, sound) that are too complex for traditional machine learning. It powers many modern AI applications by automatically learning hierarchical feature representations.</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div class="p-3 bg-blue-50 rounded-lg"><span class="font-semibold">Image Recognition</span></div>
+                        <div class="p-3 bg-green-50 rounded-lg"><span class="font-semibold">Natural Language Processing</span></div>
+                        <div class="p-3 bg-yellow-50 rounded-lg"><span class="font-semibold">Medical Diagnosis</span></div>
+                        <div class="p-3 bg-purple-50 rounded-lg"><span class="font-semibold">Autonomous Driving</span></div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Biological vs. Artificial Neuron</h3>
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1 p-4 border rounded-lg">
+                            <h4 class="font-bold text-lg text-center mb-2">Biological Neuron 🌳</h4>
+                            <p class="text-sm">Receives signals through dendrites, processes them in the cell body (soma), and fires an output signal through the axon if a threshold is met.</p>
+                        </div>
+                        <div class="flex-1 p-4 border rounded-lg">
+                            <h4 class="font-bold text-lg text-center mb-2">Artificial Neuron (Perceptron) ⚙️</h4>
+                            <p class="text-sm">Receives numerical inputs, computes a weighted sum, adds a bias, and passes the result through an activation function to produce a numerical output.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                     <h3 class="text-2xl font-semibold text-gray-800 mb-4">The Perceptron & The XOR Problem</h3>
+                     <p class="mb-4">The Perceptron is the simplest neural network, a single neuron that can only learn linearly separable patterns. This was famously demonstrated by its inability to solve the XOR problem, where the classes cannot be separated by a single straight line.</p>
+                     <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200 flex justify-center items-center">
+                        <div class="w-64 h-64 relative">
+                            <div class="absolute top-2 right-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                            <div class="absolute bottom-2 left-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                            <div class="absolute top-2 left-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">0</div>
+                            <div class="absolute bottom-2 right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">0</div>
+                            <div class="absolute w-full h-px bg-gray-300 top-1/2"></div>
+                            <div class="absolute h-full w-px bg-gray-300 left-1/2"></div>
+                             <p class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-sm text-gray-600">Input 1</p>
+                             <p class="absolute -left-6 top-1/2 -translate-y-1/2 text-sm text-gray-600 -rotate-90">Input 2</p>
+                        </div>
+                     </div>
+                     <p class="text-center mt-4 text-gray-700">No single straight line can separate the blue points (1) from the red points (0). This limitation spurred the development of multi-layered networks.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Multilayer Perceptron (MLP)</h3>
+                    <p class="mb-4">To overcome the limitations of the Perceptron, the MLP was introduced. It consists of an input layer, an output layer, and one or more <span class="font-semibold">hidden layers</span>. These hidden layers allow the MLP to learn complex, non-linear relationships in the data, successfully solving problems like XOR.</p>
+                    <p>MLPs are highly versatile and can operate on Boolean, real, and continuous values, making them suitable for both classification (predicting a category) and regression (predicting a continuous value) tasks.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">MLP as a Universal Approximator</h3>
+                    <p class="mb-4">The Universal Approximation Theorem states that an MLP with a single hidden layer containing a sufficient number of neurons can approximate any continuous function to an arbitrary degree of accuracy. This makes MLPs incredibly powerful. Click the button below to see an MLP learn to approximate a complex function.</p>
+                    <div class="chart-container">
+                        <canvas id="universalApproximationChart"></canvas>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <button id="ua-approximate" class="bg-[#8A6D53] text-white font-bold py-2 px-6 rounded-lg hover:bg-[#a18163] transition-colors">Approximate Function</button>
+                    </div>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">The Issue of Depth and Width</h3>
+                    <p class="mb-4">While a single wide hidden layer is theoretically enough, in practice, <span class="font-semibold">deep</span> networks (with multiple hidden layers) are often far more efficient and generalize better than <span class="font-semibold">shallow</span>, wide networks. Deeper architectures can learn a hierarchy of features, building up more complex concepts from simpler ones layer by layer.</p>
+                    <div class="flex flex-col md:flex-row gap-6 mt-6">
+                        <div class="flex-1 p-4 border-2 border-dashed rounded-lg text-center">
+                            <h4 class="font-bold text-lg mb-2">Shallow & Wide Network</h4>
+                             <p class="text-sm">One large hidden layer. May require exponentially more neurons for complex tasks.</p>
+                        </div>
+                        <div class="flex-1 p-4 border-2 border-dashed rounded-lg text-center">
+                            <h4 class="font-bold text-lg mb-2">Deep & Narrow Network</h4>
+                            <p class="text-sm">Multiple smaller hidden layers. More parameter-efficient and often better at generalization.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `,
         'topic-1': `
             <h3 class="text-2xl font-semibold text-gray-800 mb-4">1.2 Autoencoders: The Core Idea</h3>
             <p class="mb-6">An autoencoder learns a compressed representation of its input. It has two parts: an encoder that compresses the data to a bottleneck, and a decoder that reconstructs the original data from the compressed form.</p>
-            <div class="bg-white p-6 rounded-lg shadow-md mb-8 flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
-                <div class="text-center p-4 bg-blue-100 rounded-lg w-full md:w-auto">
+            <div class="bg-white p-6 rounded-lg shadow-md mb-8 flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 overflow-x-auto">
+                <div class="text-center p-4 bg-blue-100 rounded-lg w-full md:w-auto flex-shrink-0">
                     <p class="font-bold">Original Input</p>
                 </div>
                 <div class="font-bold text-2xl text-blue-500">→</div>
-                <div class="text-center p-4 bg-green-100 rounded-lg">
+                <div class="text-center p-4 bg-green-100 rounded-lg flex-shrink-0">
                     <p class="font-bold">Encoder</p>
                 </div>
                 <div class="font-bold text-2xl text-green-500">→</div>
-                <div class="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-400">
+                <div class="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-400 flex-shrink-0">
                     <p class="font-bold">Bottleneck (Compressed)</p>
                 </div>
                 <div class="font-bold text-2xl text-purple-500">→</div>
-                <div class="text-center p-4 bg-purple-100 rounded-lg">
+                <div class="text-center p-4 bg-purple-100 rounded-lg flex-shrink-0">
                     <p class="font-bold">Decoder</p>
                 </div>
                 <div class="font-bold text-2xl text-red-500">→</div>
-                <div class="text-center p-4 bg-red-100 rounded-lg w-full md:w-auto">
+                <div class="text-center p-4 bg-red-100 rounded-lg w-full md:w-auto flex-shrink-0">
                     <p class="font-bold">Reconstructed Output</p>
                 </div>
             </div>
@@ -156,6 +237,106 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h4 class="font-bold text-lg mb-2">Deep</h4>
                     <p>Has multiple hidden layers in both the encoder and decoder, allowing it to learn complex hierarchies.</p>
+                </div>
+            </div>
+        `,
+        'topic-2': `
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex flex-col md:flex-row items-center justify-around gap-6 text-center">
+                    <div id="fl-step-1" class="fl-step p-4 rounded-lg border-2 border-transparent transition-all duration-300">
+                        <div class="text-5xl mb-2">🖥️</div>
+                        <h4 class="font-bold">1. Server Initializes & Distributes Model</h4>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-400 self-center">→</div>
+                    <div id="fl-step-2" class="fl-step p-4 rounded-lg border-2 border-transparent transition-all duration-300">
+                        <div class="text-5xl mb-2">📱</div>
+                        <h4 class="font-bold">2. Clients Train Model Locally</h4>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-400 self-center">↓</div>
+                    <div id="fl-step-4" class="fl-step p-4 rounded-lg border-2 border-transparent transition-all duration-300">
+                         <div class="text-5xl mb-2">📈</div>
+                        <h4 class="font-bold">4. Server Aggregates Updates</h4>
+                    </div>
+                     <div class="text-2xl font-bold text-gray-400 self-center">←</div>
+                    <div id="fl-step-3" class="fl-step p-4 rounded-lg border-2 border-transparent transition-all duration-300">
+                        <div class="text-5xl mb-2">📤</div>
+                        <h4 class="font-bold">3. Clients Send Updates (not data!)</h4>
+                    </div>
+                </div>
+                <div id="fl-description" class="mt-6 p-4 bg-gray-100 rounded-lg text-center">
+                    <p>Click the button to start the Federated Learning cycle.</p>
+                </div>
+                <div class="text-center mt-6">
+                    <button id="fl-next-btn" class="bg-[#8A6D53] text-white font-bold py-2 px-6 rounded-lg hover:bg-[#a18163] transition-colors">Start Cycle</button>
+                </div>
+            </div>
+        `,
+        'topic-3': `
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                 <h3 class="text-2xl font-semibold text-gray-800 mb-4">The "Learning to Learn" Loop</h3>
+                 <p class="mb-6">A meta-learning model is trained on a variety of different tasks. Through this process, it learns a generalizable strategy for learning itself, which it can then apply to solve new, unseen tasks with very few examples.</p>
+                 <div class="flex flex-col items-center p-6 border-2 border-dashed rounded-lg">
+                    <div class="font-bold text-xl mb-4">Meta-Training Loop</div>
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="p-4 bg-blue-100 rounded-lg text-center shadow">Task 1: Classify Flowers 🌸</div>
+                        <div class="p-4 bg-green-100 rounded-lg text-center shadow">Task 2: Classify Dogs 🐶</div>
+                        <div class="p-4 bg-purple-100 rounded-lg text-center shadow">Task 3: Classify Cars 🚗</div>
+                    </div>
+                    <div class="text-4xl animate-bounce">↓</div>
+                    <div class="p-6 bg-yellow-100 rounded-lg text-center shadow-lg my-4">
+                        <h4 class="font-bold text-lg">Meta-Learner</h4>
+                        <p>Learns a general "how-to-learn" strategy from all tasks.</p>
+                    </div>
+                     <div class="text-4xl">↓</div>
+                    <div class="p-4 mt-4 bg-red-100 rounded-lg text-center shadow">
+                        <h4 class="font-bold">Ready to solve a new task (e.g., "Classify Birds 🐦") with only 1-2 examples!</h4>
+                    </div>
+                 </div>
+            </div>
+        `,
+        'topic-4': `
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="chart-container">
+                    <canvas id="continualLearningChart"></canvas>
+                </div>
+                <div class="mt-6 text-center space-x-2 space-y-2">
+                    <button id="cl-reset" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">Reset</button>
+                    <button id="cl-add-task" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">Train on New Task (Forgetting)</button>
+                    <button id="cl-add-task-ewc" class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">Train with EWC (Mitigation)</button>
+                    <button id="cl-add-task-replay" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">Train with Replay (Mitigation)</button>
+                </div>
+            </div>
+        `,
+        'topic-5': `
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <div class="w-full lg:w-1/2">
+                        <h4 class="font-bold text-lg mb-4 text-center">Transformer Architecture</h4>
+                        <div id="transformer-diagram" class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
+                             <div class="flex justify-between items-center bg-gray-200 p-2 rounded-lg mb-2">
+                                <span class="font-semibold">Inputs + Positional Encoding</span>
+                            </div>
+                            <div class="flex flex-col md:flex-row gap-4">
+                                <div class="flex-1 p-2 border-2 border-blue-400 rounded-lg bg-blue-50">
+                                    <h5 class="font-bold text-center text-blue-800">Encoder Stack</h5>
+                                    <div data-id="multi-head-attention" class="transformer-block cursor-pointer my-2 p-2 bg-blue-200 rounded text-center hover:bg-blue-300">Multi-Head Attention</div>
+                                    <div data-id="feed-forward" class="transformer-block cursor-pointer p-2 bg-blue-200 rounded text-center hover:bg-blue-300">Feed-Forward Network</div>
+                                </div>
+                                <div class="flex-1 p-2 border-2 border-green-400 rounded-lg bg-green-50">
+                                     <h5 class="font-bold text-center text-green-800">Decoder Stack</h5>
+                                    <div data-id="masked-mha" class="transformer-block cursor-pointer my-2 p-2 bg-green-200 rounded text-center hover:bg-green-300">Masked Multi-Head Attention</div>
+                                    <div data-id="encoder-decoder-attention" class="transformer-block cursor-pointer my-2 p-2 bg-green-200 rounded text-center hover:bg-green-300">Encoder-Decoder Attention</div>
+                                    <div data-id="feed-forward" class="transformer-block cursor-pointer p-2 bg-green-200 rounded text-center hover:bg-green-300">Feed-Forward Network</div>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-center font-bold text-2xl">↓</div>
+                            <div class="bg-gray-200 p-2 rounded-lg text-center font-semibold">Final Output</div>
+                        </div>
+                    </div>
+                    <div id="transformer-explanation" class="w-full lg:w-1/2 p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+                        <h4 class="font-bold text-lg mb-2">Click a component on the left!</h4>
+                        <p>Select a block from the Transformer diagram to learn more about its function and importance.</p>
+                    </div>
                 </div>
             </div>
         `,
@@ -266,8 +447,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 step.classList.remove('border-[#8A6D53]', 'scale-110');
             }
         });
-        flDesc.innerHTML = `<p>${flDescriptions[currentFlStep - 1]}</p>`;
-        flNextBtn.textContent = 'Next Step';
+        if(flDesc && flDescriptions[currentFlStep - 1]){
+            flDesc.innerHTML = `<p>${flDescriptions[currentFlStep - 1]}</p>`;
+        }
+        if(flNextBtn) flNextBtn.textContent = 'Next Step';
     }
 
     if (flNextBtn) {
@@ -278,6 +461,84 @@ document.addEventListener('DOMContentLoaded', () => {
              if(currentFlStep === 4) flNextBtn.textContent = 'Restart Cycle';
         });
     }
+
+    // Topic 0: Universal Approximation Chart
+    function setupApproximationChart() {
+        const uaCtx = document.getElementById('universalApproximationChart');
+        if (!uaCtx) return;
+        
+        let uaChart;
+        let approximationLevel = 0;
+
+        const labels = Array.from({length: 100}, (_, i) => (i/10).toFixed(1));
+        const targetFunction = labels.map(x => Math.sin(x * 1.5) * 5 + Math.cos(x*4)*2 + 10);
+        
+        const baseData = {
+            labels: labels,
+            datasets: [{
+                label: 'Target Function',
+                data: targetFunction,
+                borderColor: 'rgba(138, 109, 83, 1)',
+                borderWidth: 3,
+                pointRadius: 0,
+                tension: 0.1
+            }]
+        };
+
+        function createOrUpdateUaChart(data) {
+             if (uaChart) {
+                uaChart.data = data;
+                uaChart.update();
+            } else {
+                 uaChart = new Chart(uaCtx, {
+                    type: 'line',
+                    data: JSON.parse(JSON.stringify(data)),
+                    options: {
+                        scales: { y: { beginAtZero: false, title: { display: true, text: 'Value' } } },
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: true, text: 'MLP Function Approximation', font: { size: 16 } },
+                            tooltip: { enabled: false }
+                        }
+                    }
+                });
+            }
+        }
+        
+        createOrUpdateUaChart(baseData);
+        
+        document.getElementById('ua-approximate')?.addEventListener('click', () => {
+            approximationLevel++;
+            const newData = JSON.parse(JSON.stringify(baseData));
+            
+            let approxData;
+            if (approximationLevel === 1) { // Low capacity
+                 approxData = labels.map(x => 10 + (x-5)*0.5); 
+            } else if (approximationLevel === 2) { // Medium capacity
+                 approxData = labels.map(x => Math.sin(x * 1.5) * 5 + 10);
+            } else { // High capacity (and reset)
+                 approxData = targetFunction.map(y => y + (Math.random()-0.5)*0.5);
+                 approximationLevel = 0;
+            }
+
+            newData.datasets.push({
+                label: `MLP Approx. (Level ${approximationLevel || 3})`,
+                data: approxData,
+                borderColor: 'rgba(54, 162, 235, 0.7)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderDash: [5, 5],
+                pointRadius: 0,
+                tension: 0.1,
+                fill: true
+            });
+
+            createOrUpdateUaChart(newData);
+        });
+    }
+
+    setupApproximationChart();
+
 
     // Topic 4: Continual Learning Chart
     const clCtx = document.getElementById('continualLearningChart');
